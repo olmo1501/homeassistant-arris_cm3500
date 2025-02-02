@@ -96,7 +96,7 @@ def create_sensors(modem):
                 "icon": "mdi:sine-wave",
                 "unit": "MHz",
                 "device_class": SensorStateClass.MEASUREMENT,
-                "precision": 0,
+                "precision": 2,
             },
             "Power": {
                 "icon": "mdi:flash",
@@ -152,7 +152,7 @@ def create_sensors(modem):
                 "icon": "mdi:sine-wave",
                 "unit": "MHz",
                 "device_class": SensorStateClass.MEASUREMENT,
-                "precision": 0,
+                "precision": 2,
             },
             "Power": {
                 "icon": "mdi:flash",
