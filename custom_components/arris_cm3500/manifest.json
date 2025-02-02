@@ -1,0 +1,16 @@
+{
+  "domain": "arris_cm3500",
+  "name": "Arris CM3500",
+  "codeowners": ["@stickpin"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/stickpin/homeassistant-arris_cm3500",
+  "homekit": {},
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/stickpin/homeassistant-arris_cm3500/issues",
+  "requirements": [],
+  "ssdp": [],
+  "version": "v1.0.0",
+  "zeroconf": []
+}

@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "host": "Hostname",
+          "username": "Username",
+          "password": "Password"
+        },
+        "description": "Fill in Arris CM3500 credentials"
+      },
+      "reauth_confirm": {
+        "data": {
+          "host": "Hostname",
+          "username": "Username",
+          "password": "Password"
+        },
+        "description": "Re-authenticate with your Arris CM3500 credentials"
+      }
+    },
+    "abort": {
+      "already_configured": "Modem is already configured",
+      "reauth_successful": "Re-authentication was successful"
+    },
+    "error": {
+      "login_failed": "Unable not login to Arris CM3500, please check your credentials and verify that the service is working"
+    }
+  }
+}
