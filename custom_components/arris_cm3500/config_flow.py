@@ -144,7 +144,7 @@ class ArrisCM3500ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        CONF_HOST, default=self.reauth_entry.data[DEFAULT_HOST]
+                        CONF_HOST, default=self.reauth_entry.data[CONF_HOST]
                     ): str,
                     vol.Required(
                         CONF_USERNAME, default=self.reauth_entry.data[CONF_USERNAME]
