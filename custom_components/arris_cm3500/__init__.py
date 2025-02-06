@@ -8,6 +8,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import (
@@ -89,6 +90,8 @@ class ArrisCM3500ModemCoordinator(DataUpdateCoordinator):
 
         self.modem_status_data = await self.modem_data.get_modem_status()
         _LOGGER.debug("Fetching data...")
+        if "login_failed" in self.modem_status_data:
+            raise ConfigEntryAuthFailed("Credentials expired. Try to re-login.")
         _LOGGER.debug("New Data: %s", self.modem_status_data)
         return await self.update()
 

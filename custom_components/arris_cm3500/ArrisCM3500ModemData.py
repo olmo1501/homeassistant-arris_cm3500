@@ -55,7 +55,7 @@ class ArrisCM3500ModemData:
                     )
                 return False
         except Exception as error:
-            _LOGGER.error("Error during the login proccess, error %s", error)
+            _LOGGER.error("Error during the login process, error %s", error)
             return False
 
     async def get_modem_status(self) -> dict:
@@ -64,16 +64,15 @@ class ArrisCM3500ModemData:
 
         try:
             modem_raw_data = await self.get_raw_modem_status_data()
+            if "login_failed" in modem_raw_data:
+                return modem_raw_data
             modem_data = self.extract_data(modem_raw_data)
             return modem_data
         except Exception as error:
             _LOGGER.error(
-                "Error during the modem status data retrieval proccess, error %s",
-                error,
+                "Error during the modem status data retrieval process, error %s", error
             )
-            return {
-                "error_message": error,
-            }
+            return {"error_message": error}
 
     async def get_raw_modem_status_data(self) -> str:
         """Get raw modem status data."""
@@ -109,13 +108,10 @@ class ArrisCM3500ModemData:
                 return False
         except Exception as error:
             _LOGGER.error(
-                "Error during the raw modem status data retrieval proccess, error %s",
+                "Error during the raw modem status data retrieval process, error %s",
                 error,
             )
-            return {
-                "status_code": None,
-                "error_message": error,
-            }
+            return {"status_code": None, "error_message": error}
 
     def extract_data(self, raw_response: str) -> dict:
         """Extract data from HTML code."""
@@ -130,97 +126,155 @@ class ArrisCM3500ModemData:
 
         try:
             soup = BeautifulSoup(raw_response, "html.parser")
-
-            # Find Downstream & Upstream tables
-            tables = soup.find_all("table")  # Identify the table containing DCID values
+            tables = soup.find_all("table")
 
             for table in tables:
                 rows = table.find_all("tr")
-
                 for row in rows:
                     cells = row.find_all("td")
+                    if len(cells) == 9:
+                        (
+                            cell0,
+                            cell1,
+                            cell2,
+                            cell3,
+                            cell4,
+                            cell5,
+                            cell6,
+                            cell7,
+                            cell8,
+                        ) = [c.text.strip() for c in cells]
 
-                    if len(cells) == 9:  # Ensure enough columns exist
-                        cell0 = cells[0].text.strip()
-                        cell1 = cells[1].text.strip()
-                        cell2 = cells[2].text.strip()
-                        cell3 = cells[3].text.strip()
-                        cell4 = cells[4].text.strip()
-                        cell5 = cells[5].text.strip()
-                        cell6 = cells[6].text.strip()
-                        cell7 = cells[7].text.strip()
-                        cell8 = cells[8].text.strip()
-
-                        # Downstream_QAM
                         if "QAM" in cell5:
-                            entry = {
-                                "DCID": cell1,
-                                "Frequency": self.clean_value(cell2),
-                                "Power": self.clean_value(cell3),
-                                "SNR": self.clean_value(cell4),
-                                "Modulation": cell5,
-                                "Correcteds": cell7,
-                                "Uncorrectables": cell8,
-                            }
-                            response["Downstream_QAM"].append(entry)
+                            response["Downstream_QAM"].append(
+                                {
+                                    "DCID": cell1,
+                                    "Frequency": self.clean_value(cell2),
+                                    "Power": self.clean_value(cell3),
+                                    "SNR": self.clean_value(cell4),
+                                    "Modulation": cell5,
+                                    "Correcteds": self.clean_value(cell7),
+                                    "Uncorrectables": self.clean_value(cell8),
+                                }
+                            )
 
-                        # Downstream_OFDM
                         if "4K" in cell1:
-                            entry = {
-                                "DCID_OFDM": self.clean_value(cell0),
-                                "FFT_Type": cell1,
-                                "Channel_Width": cell2,
-                                "Active_Subcarriers": cell3,
-                                "First_Subcarrier": cell4,
-                                "Last_Subcarrier": cell5,
-                                "RxMER_Pilot": cell6,
-                                "RxMER_PLC": cell7,
-                                "RxMER_Data": cell8,
-                            }
-                            response["Downstream_OFDM"].append(entry)
+                            response["Downstream_OFDM"].append(
+                                {
+                                    "DCID_OFDM": self.clean_value(cell0),
+                                    "FFT_Type": cell1,
+                                    "Channel_Width": self.clean_value(cell2),
+                                    "Active_Subcarriers": self.clean_value(cell3),
+                                    "First_Subcarrier": self.clean_value(cell4),
+                                    "Last_Subcarrier": self.clean_value(cell5),
+                                    "RxMER_Pilot": self.clean_value(cell6),
+                                    "RxMER_PLC": self.clean_value(cell7),
+                                    "RxMER_Data": self.clean_value(cell8),
+                                }
+                            )
 
-                        # Upstream_OFDM
                         if "2K" in cell1:
-                            entry = {
-                                "UCID_OFDM": self.clean_value(cell0),
-                                "FFT_Type": cell1,
-                                "Channel_Width": cell2,
-                                "Active_Subcarriers": cell3,
-                                "First_Subcarrier": cell4,
-                                "Last_Subcarrier": cell5,
-                                "Tx_Power": cell6,
-                            }
-                            response["Upstream_OFDM"].append(entry)
+                            response["Upstream_OFDM"].append(
+                                {
+                                    "UCID_OFDM": self.clean_value(cell0),
+                                    "FFT_Type": cell1,
+                                    "Channel_Width": self.clean_value(cell2),
+                                    "Active_Subcarriers": self.clean_value(cell3),
+                                    "First_Subcarrier": self.clean_value(cell4),
+                                    "Last_Subcarrier": self.clean_value(cell5),
+                                    "Tx_Power": self.clean_value(cell6),
+                                }
+                            )
 
-                    if len(cells) == 7:  # Ensure enough columns exist
-                        cell1 = cells[1].text.strip()
-                        cell2 = cells[2].text.strip()
-                        cell3 = cells[3].text.strip()
-                        cell4 = cells[4].text.strip()
-                        cell5 = cells[5].text.strip()
-                        cell6 = cells[6].text.strip()
+                    if len(cells) == 7:
+                        cell1, cell2, cell3, cell4, cell5, cell6 = [
+                            c.text.strip() for c in cells[1:]
+                        ]
 
-                        # Upstream_QAM
                         if "ATDMA" in cell4:
-                            entry = {
-                                "UCID": cell1,
-                                "Frequency": self.clean_value(cell2),
-                                "Power": self.clean_value(cell3),
-                                "Channel_Type": cell4,
-                                "Symbol_Rate": self.clean_value(cell5),
-                                "Modulation": cell6,
-                            }
-                            response["Upstream_QAM"].append(entry)
+                            response["Upstream_QAM"].append(
+                                {
+                                    "UCID": cell1,
+                                    "Frequency": self.clean_value(cell2),
+                                    "Power": self.clean_value(cell3),
+                                    "Channel_Type": cell4,
+                                    "Symbol_Rate": self.clean_value(cell5),
+                                    "Modulation": cell6,
+                                }
+                            )
+
+            # Add missing channels with default values
+            for dcid in range(1, 33):
+                if not any(
+                    ch["DCID"] == str(dcid) for ch in response["Downstream_QAM"]
+                ):
+                    response["Downstream_QAM"].append(
+                        {
+                            "DCID": str(dcid),
+                            "Frequency": 0,
+                            "Power": 0,
+                            "SNR": 0,
+                            "Modulation": "N/A",
+                            "Correcteds": 0,
+                            "Uncorrectables": 0,
+                        }
+                    )
+
+            for ucid in range(1, 9):
+                if not any(ch["UCID"] == str(ucid) for ch in response["Upstream_QAM"]):
+                    response["Upstream_QAM"].append(
+                        {
+                            "UCID": str(ucid),
+                            "Frequency": 0,
+                            "Power": 0,
+                            "Channel_Type": "N/A",
+                            "Symbol_Rate": 0,
+                            "Modulation": "N/A",
+                        }
+                    )
+
+            for dcid_ofdm in range(1, 3):
+                if not any(
+                    ch["DCID_OFDM"] == str(dcid_ofdm)
+                    for ch in response["Downstream_OFDM"]
+                ):
+                    response["Downstream_OFDM"].append(
+                        {
+                            "DCID_OFDM": str(dcid_ofdm),
+                            "FFT_Type": "N/A",
+                            "Channel_Width": 0,
+                            "Active_Subcarriers": 0,
+                            "First_Subcarrier": 0,
+                            "Last_Subcarrier": 0,
+                            "RxMER_Pilot": 0,
+                            "RxMER_PLC": 0,
+                            "RxMER_Data": 0,
+                        }
+                    )
+
+            for ucid_ofdm in range(0, 2):
+                if not any(
+                    ch["UCID_OFDM"] == str(ucid_ofdm)
+                    for ch in response["Upstream_OFDM"]
+                ):
+                    response["Upstream_OFDM"].append(
+                        {
+                            "UCID_OFDM": str(ucid_ofdm),
+                            "FFT_Type": "N/A",
+                            "Channel_Width": 0,
+                            "Active_Subcarriers": 0,
+                            "First_Subcarrier": 0,
+                            "Last_Subcarrier": 0,
+                            "Tx_Power": 0,
+                        }
+                    )
+
             return response
 
         except Exception as error:
-            _LOGGER.error(
-                "Error during the raw data convertion, error %s",
-                error,
-            )
+            _LOGGER.error("Error during the raw data conversion, error %s", error)
             return response
 
     def clean_value(self, value: str) -> float:
-        # Use regex to remove anything that is not a number, period, or minus sign
         cleaned_value = re.sub(r"[^\d.-]", "", value)
-        return cleaned_value
+        return float(cleaned_value) if cleaned_value else 0
