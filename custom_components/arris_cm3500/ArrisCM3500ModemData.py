@@ -277,4 +277,4 @@ class ArrisCM3500ModemData:
 
     def clean_value(self, value: str) -> float:
         cleaned_value = re.sub(r"[^\d.-]", "", value)
-        return float(cleaned_value) if cleaned_value else 0
+        return cleaned_value if cleaned_value else 0
