@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 import logging
+import asyncio
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
@@ -16,6 +17,8 @@ from .const import (
     DATA_LISTENER,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
+    MAX_RETRIES,
+    RETRY_DELAY,
 )
 from .ArrisCM3500ModemData import ArrisCM3500ModemData
 from .ArrisCM3500ModemDashboard import ArrisCM3500ModemDashboard
@@ -88,12 +91,25 @@ class ArrisCM3500ModemCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data."""
 
-        self.modem_status_data = await self.modem_data.get_modem_status()
-        _LOGGER.debug("Fetching data...")
-        if "login_failed" in self.modem_status_data:
-            raise ConfigEntryAuthFailed("Credentials expired. Try to re-login.")
-        _LOGGER.debug("New Data: %s", self.modem_status_data)
-        return await self.update()
+        for attempt in range(1, MAX_RETRIES + 1):
+            self.modem_status_data = await self.modem_data.get_modem_status()
+            _LOGGER.debug("Fetching data... Attempt %d/%d", attempt, MAX_RETRIES)
+
+            if "login_failed" not in self.modem_status_data:
+                _LOGGER.debug("New Data: %s", self.modem_status_data)
+                return await self.update()
+
+            _LOGGER.warning(
+                "Login failed. Retrying in %d seconds... (%d/%d)",
+                RETRY_DELAY,
+                attempt,
+                MAX_RETRIES,
+            )
+            await asyncio.sleep(RETRY_DELAY)
+
+        # If all retries fail, raise an error
+        _LOGGER.error("All retries failed. Raising authentication error.")
+        raise ConfigEntryAuthFailed("Credentials expired. Try to re-login.")
 
     async def update(self) -> ArrisCM3500ModemDashboard:
         """Update usage data from Arris CM3500."""
