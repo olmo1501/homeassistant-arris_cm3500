@@ -107,6 +107,8 @@ create_properties(
         "Active_Subcarriers",
         "First_Subcarrier",
         "Last_Subcarrier",
+        "Lower_Frequency",
+        "Upper_Frequency",
         "Tx_Power",
     ],
     lambda self, ucid_ofdm, key: self.get_value(

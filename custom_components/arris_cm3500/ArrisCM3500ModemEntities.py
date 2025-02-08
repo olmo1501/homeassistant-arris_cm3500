@@ -296,11 +296,23 @@ def create_sensors(modem):
                 "device_class": SensorStateClass.MEASUREMENT,
                 "precision": 0,
             },
+            "Lower_Frequency": {
+                "icon": "mdi:arrow-down",  # Indicates lower frequency
+                "unit": "MHz",
+                "device_class": SensorStateClass.MEASUREMENT,
+                "precision": 1,
+            },
+            "Upper_Frequency": {
+                "icon": "mdi:arrow-up",  # Indicates upper frequency
+                "unit": "MHz",
+                "device_class": SensorStateClass.MEASUREMENT,
+                "precision": 1,
+            },
             "Tx_Power": {
                 "icon": "mdi:flash",  # Indicates transmission power
                 "unit": "dBmV",
                 "device_class": SensorStateClass.MEASUREMENT,
-                "precision": 1,
+                "precision": 2,
             },
         }
 

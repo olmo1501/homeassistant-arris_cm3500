@@ -182,7 +182,9 @@ class ArrisCM3500ModemData:
                                     "Active_Subcarriers": self.clean_value(cell3),
                                     "First_Subcarrier": self.clean_value(cell4),
                                     "Last_Subcarrier": self.clean_value(cell5),
-                                    "Tx_Power": self.clean_value(cell6),
+                                    "Lower_Frequency": self.clean_value(cell6),
+                                    "Upper_Frequency": self.clean_value(cell7),
+                                    "Tx_Power": self.clean_value(cell8),
                                 }
                             )
 
@@ -265,6 +267,8 @@ class ArrisCM3500ModemData:
                             "Active_Subcarriers": 0,
                             "First_Subcarrier": 0,
                             "Last_Subcarrier": 0,
+                            "Lower_Frequency": 0,
+                            "Upper_Frequency": 0,
                             "Tx_Power": 0,
                         }
                     )
