@@ -134,7 +134,7 @@ def create_sensors(modem):
             sensors.append(
                 Sensor(
                     attr=f"dcid_{dcid}_{key.lower()}",
-                    name=f"DCID {dcid} {key}",
+                    name=f"DCID {dcid} {key.replace('_', ' ')}",
                     icon=details["icon"],
                     unit=details["unit"],
                     state_class=details["device_class"],
@@ -184,7 +184,7 @@ def create_sensors(modem):
             sensors.append(
                 Sensor(
                     attr=f"ucid_{ucid}_{key.lower()}",
-                    name=f"UCID {ucid} {key}",
+                    name=f"UCID {ucid} {key.replace('_', ' ')}",
                     icon=details["icon"],
                     unit=details["unit"],
                     state_class=details["device_class"],
@@ -252,7 +252,7 @@ def create_sensors(modem):
             sensors.append(
                 Sensor(
                     attr=f"dcid_ofdm_{dcid_ofdm}_{key.lower()}",
-                    name=f"DCID OFDM {dcid_ofdm} {key}",
+                    name=f"DCID OFDM {dcid_ofdm} {key.replace('_', ' ')}",
                     icon=details["icon"],
                     unit=details["unit"],
                     state_class=details["device_class"],
@@ -320,7 +320,7 @@ def create_sensors(modem):
             sensors.append(
                 Sensor(
                     attr=f"ucid_ofdm_{ucid_ofdm}_{key.lower()}",
-                    name=f"UCID OFDM {ucid_ofdm} {key}",
+                    name=f"UCID OFDM {ucid_ofdm} {key.replace('_', ' ')}",
                     icon=details["icon"],
                     unit=details["unit"],
                     state_class=details["device_class"],
