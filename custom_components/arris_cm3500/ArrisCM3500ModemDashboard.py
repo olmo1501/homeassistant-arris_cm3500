@@ -73,7 +73,7 @@ create_properties(
 create_properties(
     ArrisCM3500ModemDashboard,
     "ucid",
-    range(1, 9),
+    range(1, 13),
     ["Frequency", "Power", "Channel_Type", "Symbol_Rate", "Modulation"],
     lambda self, ucid, key: self.get_value(self.upstream_qam_lookup, ucid, key),
 )
